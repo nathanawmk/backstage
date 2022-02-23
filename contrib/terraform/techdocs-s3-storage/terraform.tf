@@ -19,8 +19,8 @@ variable "shared_managed_tag" {
 #==========================
 
 resource "aws_s3_bucket" "backstage" {
-  bucket = var.backstage_bucket
-  acl    = "private"
+  bucket   = var.backstage_bucket
+  acl      = "private"
   provider = aws
 
   lifecycle {
@@ -30,7 +30,7 @@ resource "aws_s3_bucket" "backstage" {
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        sse_algorithm     = "AES256"
+        sse_algorithm = "AES256"
       }
     }
   }
@@ -38,15 +38,16 @@ resource "aws_s3_bucket" "backstage" {
   tags = {
     Name                   = var.backstage_bucket
     "Managed By Terraform" = var.shared_managed_tag
+    yor_trace              = "9dee0750-3f0e-4b83-b009-42e369870fe4"
   }
 }
 
 resource "aws_s3_bucket_public_access_block" "backstage" {
   bucket = aws_s3_bucket.backstage.id
 
-  block_public_acls   = true
-  block_public_policy = true
-  ignore_public_acls = true
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
   restrict_public_buckets = true
 }
 
@@ -57,11 +58,14 @@ resource "aws_s3_bucket_public_access_block" "backstage" {
 
 resource "aws_iam_user" "backstage" {
   name = var.backstage_iam
+  tags = {
+    yor_trace = "731afa8b-065d-47a5-9ec4-93e694753223"
+  }
 }
 
 resource "aws_iam_user_policy" "backstage" {
-  name = var.backstage_iam
-  user = aws_iam_user.backstage.name
+  name   = var.backstage_iam
+  user   = aws_iam_user.backstage.name
   policy = data.aws_iam_policy_document.backstage_policy.json
 }
 
